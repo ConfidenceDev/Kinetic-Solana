@@ -1,0 +1,21 @@
+{
+  "name": "kinetic-solana",
+  "version": "1.0.0",
+  "description": "Kinetic project running on solana blockchain",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "dependencies": {
+    "@kin-kinetic/sdk": "^1.0.0-rc.13",
+    "express": "^4.18.2"
+  }
+}

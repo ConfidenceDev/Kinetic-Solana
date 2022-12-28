@@ -1,2 +1,3 @@
 # Kinetic-Solana
- Kinetic project running on solana blockchain
+
+Kinetic project running on solana blockchain
