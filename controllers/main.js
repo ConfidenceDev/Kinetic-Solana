@@ -22,7 +22,7 @@ async function createAccount(Keypair, Commitment, kineticClient, res) {
         createdAt: result.createdAt,
         publicKey: keypair.publicKey,
         secretKey: keypair.secretKey,
-        tx: result.tx,
+        mnemonic: mnemonic,
       };
       return res.status(201).json({ status: "success", msg: doc });
     }
@@ -39,9 +39,9 @@ async function createAccount(Keypair, Commitment, kineticClient, res) {
 }
 
 //======================== CHECK BALANCE =============================
-async function checkBalance(kineticClient, keypair, res) {
+async function checkBalance(kineticClient, wallet, res) {
   try {
-    const balanceOptions = { account: keypair.publicKey };
+    const balanceOptions = { account: wallet };
     const { balance } = await kineticClient.getBalance(balanceOptions);
     if (balance) {
       return res.status(200).json({ status: "success", msg: balance });
@@ -63,12 +63,14 @@ async function transferKin(
   kineticClient,
   Commitment,
   TransactionType,
-  keypair,
+  Keypair,
+  mnemonic,
   amt,
   dest,
   res
 ) {
   try {
+    const keypair = await Keypair.fromMnemonic(mnemonic);
     const transferOptions = {
       amount: amt,
       destination: dest,
@@ -82,7 +84,16 @@ async function transferKin(
 
     const result = await kineticClient.makeTransfer(transferOptions);
     if (result) {
-      return res.status(200).json({ status: "success", msg: result });
+      const doc = {
+        id: result.id,
+        createdAt: result.createdAt,
+        amount: result.amount,
+        decimals: result.decimals,
+        referenceId: result.referenceId,
+        referenceType: result.referenceType,
+        toWallet: dest,
+      };
+      return res.status(200).json({ status: "success", msg: doc });
     }
 
     return res
@@ -97,7 +108,14 @@ async function transferKin(
 }
 
 //======================== TRANSFER BATCH =============================
-async function transferBatch(kineticClient, Commitment, keypair, dests, res) {
+async function transferBatch(
+  kineticClient,
+  Commitment,
+  Keypair,
+  mnemonic,
+  dests,
+  res
+) {
   try {
     /*const destinations = [
     {
@@ -105,6 +123,7 @@ async function transferBatch(kineticClient, Commitment, keypair, dests, res) {
       destination: `BQJi5K2s4SDDbed1ArpXjb6n7yVUfM34ym9a179MAqVo`,
     },
   ];*/
+    const keypair = await Keypair.fromMnemonic(mnemonic);
     const transferBatchOptions = {
       owner: keypair,
       destinations: dests,
@@ -151,8 +170,9 @@ async function getTransactionDetails(kineticClient, transactionId, res) {
 }
 
 //======================== GET ACCOUNT HISTORY ===================
-async function getAccountHistory(kineticClient, keypair, res) {
+async function getAccountHistory(kineticClient, Keypair, mnemonic, res) {
   try {
+    const keypair = await Keypair.fromMnemonic(mnemonic);
     const historyOptions = { account: keypair.publicKey };
     const result = await kineticClient.getHistory(historyOptions);
     if (result) {
@@ -171,8 +191,9 @@ async function getAccountHistory(kineticClient, keypair, res) {
 }
 
 //======================== GET ACCOUNT INFO ======================
-async function getAccountInfo(kineticClient, keypair, res) {
+async function getAccountInfo(kineticClient, Keypair, mnemonic, res) {
   try {
+    const keypair = await Keypair.fromMnemonic(mnemonic);
     const getAccountInfoOptions = { account: keypair.publicKey };
     const result = await kineticClient.getAccountInfo(getAccountInfoOptions);
     if (result) {
@@ -191,8 +212,9 @@ async function getAccountInfo(kineticClient, keypair, res) {
 }
 
 //======================== CLOSE ACCOUNT =============================
-async function closeAccount(Commitment, kineticClient, keypair, res) {
+async function closeAccount(Commitment, kineticClient, Keypair, mnemonic, res) {
   try {
+    const keypair = await Keypair.fromMnemonic(mnemonic);
     const closeAccountOptions = {
       account: keypair.publicKey,
       commitment: Commitment.Finalized, // Optional, can be Finalized, Confirmed, Processed

@@ -2,3 +2,9 @@ GET http://localhost:5000/
 
 ###
 GET http://localhost:5000/create
+
+###
+POST http://localhost:5000/balance
+
+###
+POST http://localhost:5000/earn

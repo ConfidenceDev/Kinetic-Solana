@@ -12,6 +12,10 @@ const clientOptions = {
   endpoint: "https://sandbox.kinetic.host", // devnet endpoint
 };
 const kineticClient = await KineticSdk.setup(clientOptions);
+const mnemonic =
+  "tobacco dumb bracket spawn april ethics evoke cigar bargain slice south copper";
+const wallet = "Hng77LRbVKKVrVPYGoqy73L3hZN63pBxTMq4yZtF6MNW";
+const wallet2 = "DKXv9A5GgcNRXctCsuJAPDVjaMdxofQByvz3k67p4ifG";
 
 //======================== END POINTS ===============================
 router.get("/create", (req, res) => {
@@ -19,23 +23,25 @@ router.get("/create", (req, res) => {
 });
 
 router.post("/balance", (req, res) => {
-  const keypair = req.body;
-  if (keypair) {
-    DB.checkBalance(kineticClient, keypair, res);
+  //const wallet = req.body.wallet;
+  if (wallet) {
+    DB.checkBalance(kineticClient, wallet2, res);
   }
 });
 
 router.post("/earn", (req, res) => {
-  const toWallet = req.body;
-  if (toWallet) {
-    const amount = "";
-    const keypair = null;
+  //const toWallet = req.body.wallet;
+  //const mnemonic = req.body.mnemonic;
+  const toWallet = wallet2;
+  if (toWallet && mnemonic) {
+    const amount = "100";
 
     DB.transferKin(
       kineticClient,
       Commitment,
       TransactionType,
-      keypair,
+      Keypair,
+      mnemonic,
       amount,
       toWallet,
       res
