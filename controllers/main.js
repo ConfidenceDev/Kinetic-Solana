@@ -1,14 +1,10 @@
+import { uuid } from "uuidv4";
+
 //======================== CREATE ACCOUNT =========================
 async function createAccount(Keypair, Commitment, kineticClient, res) {
   try {
     const mnemonic = Keypair.generateMnemonic();
     const keypair = Keypair.fromMnemonic(mnemonic);
-
-    //Just for test purpose
-    console.log("Public Key: " + keypair.publicKey);
-    console.log("==============================");
-    console.log("Secret Key: " + keypair.secretKey);
-    console.log("==============================");
 
     const accountOptions = {
       owner: keypair,
@@ -62,9 +58,9 @@ async function checkBalance(kineticClient, wallet, res) {
 async function transferKin(
   kineticClient,
   Commitment,
-  TransactionType,
   Keypair,
   mnemonic,
+  type,
   amt,
   dest,
   res
@@ -76,9 +72,9 @@ async function transferKin(
       destination: dest,
       owner: keypair,
       commitment: Commitment.Finalized, // Optional, can be Finalized, Confirmed, Processed
-      type: TransactionType.Earn, // Optional, can be Unknown, None, Earn, Spend or P2P,
-      referenceId: "some id", // Optional, stored off-chain and returned via webhooks
-      referenceType: "some reference", // Optional, stored off-chain and returned via webhooks
+      type: type, // Optional, can be Unknown, None, Earn, Spend or P2P,
+      referenceId: uuid(), // Optional, stored off-chain and returned via webhooks
+      referenceType: "single", // Optional, stored off-chain and returned via webhooks
       senderCreate: false, // Optional, will make a Kin Token Account at that destination if true
     };
 
@@ -112,6 +108,7 @@ async function transferBatch(
   kineticClient,
   Commitment,
   Keypair,
+  type,
   mnemonic,
   dests,
   res
@@ -127,10 +124,10 @@ async function transferBatch(
     const transferBatchOptions = {
       owner: keypair,
       destinations: dests,
-      commitment: Commitment.Finalized, // Optional, can be Finalized, Confirmed, Processed
-      type: TransactionType.Earn, // Optional, can be Unknown, None, Earn, Spend or P2P,
-      referenceId: "some id", // Optional, stored off-chain and returned via webhooks
-      referenceType: "some reference", // Optional, stored off-chain and returned via webhooks
+      commitment: Commitment.Finalized,
+      type: type,
+      referenceId: uuid(), // Optional, stored off-chain and returned via webhooks
+      referenceType: "batch", // Optional, stored off-chain and returned via webhooks
       senderCreate: false, // Optional, will make a Kin Token Account at that destination if true
     };
 
